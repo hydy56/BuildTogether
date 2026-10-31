@@ -1,6 +1,6 @@
 import type { Category, Project, RecruitmentStatus, User } from "../types";
-const u = (id: string, name: string, university: string): User => ({ id, name, username: id, university, skills: [] });
-export const currentUser: User = u("jan-kowalski", "Jan Kowalski", "Politechnika Wrocławska");
+const u = (id: string, name: string, university: string, skills: string[] = []): User => ({ id, name, username: id, university, skills });
+export const currentUser: User = u("jan-kowalski", "Jan Kowalski", "Politechnika Wrocławska", ["React", "TypeScript", "UI/UX", "Product Design", "Node.js"]);
 const owners = [u("anna-nowak","Anna Nowak","Uniwersytet Warszawski"), u("piotr-wisniewski","Piotr Wiśniewski","AGH w Krakowie"), u("marta-zielinska","Marta Zielińska","Politechnika Gdańska"), u("kacper-lewandowski","Kacper Lewandowski","Uniwersytet Jagielloński"), u("zofia-wojcik","Zofia Wójcik","SGH w Warszawie")];
 const rows: [string,string,Category,string,string[],RecruitmentStatus][] = [
  ["Aplikacja do wspólnych notatek","Platforma do współdzielenia notatek z wykładów.","Startup","Uniwersytet Warszawski",["React","Node.js","UI/UX"],"open"],

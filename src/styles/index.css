@@ -1,4 +1,83 @@
 @import "tailwindcss";
 @theme { --color-brand-50:#f5f3ff; --color-brand-100:#ede9fe; --color-brand-500:#7c5cf0; --color-brand-600:#6d4ae0; --color-brand-700:#5b3bc4; --font-sans:"Inter",system-ui,sans-serif; }
-body{background:#f8f9fc;color:#1b1b2f}
+html[data-theme="dark"] { color-scheme: dark; }
+body{background:#f8f9fc;color:#1b1b2f;transition:background-color .2s ease,color .2s ease}
+html[data-theme="dark"] body{background:#020817;color:#e2e8f0}
 :focus-visible{outline:2px solid var(--color-brand-500);outline-offset:2px}
+
+html[data-theme="dark"] [class*="bg-white"],
+html[data-theme="dark"] [class*="bg-slate-50"],
+html[data-theme="dark"] [class*="bg-slate-100"],
+html[data-theme="dark"] [class*="bg-slate-200"],
+html[data-theme="dark"] [class*="bg-slate-300"] {
+  background-color: #0f172a !important;
+}
+
+html[data-theme="dark"] [class*="border-slate-200"],
+html[data-theme="dark"] [class*="border-slate-300"] {
+  border-color: rgba(148, 163, 184, 0.25) !important;
+}
+
+html[data-theme="dark"] [class*="text-slate-900"],
+html[data-theme="dark"] [class*="text-slate-700"],
+html[data-theme="dark"] [class*="text-slate-600"],
+html[data-theme="dark"] [class*="text-slate-500"],
+html[data-theme="dark"] [class*="text-slate-400"] {
+  color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] [class*="bg-brand-50"] {
+  background-color: rgba(124, 92, 240, 0.12) !important;
+}
+
+html[data-theme="dark"] [class*="text-brand-600"] { color: #a78bfa !important; }
+html[data-theme="dark"] [class*="text-brand-700"] { color: #c4b5fd !important; }
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select,
+html[data-theme="dark"] button {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .shadow-sm {
+  box-shadow: 0 1px 0 rgba(15,23,42,0.25), 0 10px 20px rgba(15,23,42,0.25) !important;
+}
+
+html[data-theme="dark"] .hover\:bg-slate-100:hover,
+html[data-theme="dark"] .hover\:bg-slate-50:hover {
+  background-color: #111827 !important;
+}
+
+html[data-theme="dark"] .dark-panel,
+html[data-theme="dark"] .dark-panel .bg-white,
+html[data-theme="dark"] .dark-panel .bg-slate-50,
+html[data-theme="dark"] .dark-panel .notification-item {
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] .dark-panel .notification-item:not(.bg-brand-50\/40) {
+  background-color: #0f172a !important;
+}
+
+html[data-theme="dark"] .dark-panel .notification-item.bg-brand-50\/40 {
+  background-color: rgba(124, 92, 240, 0.12) !important;
+}
+
+html[data-theme="dark"] .dark-panel .text-slate-900,
+html[data-theme="dark"] .dark-panel .text-slate-800,
+html[data-theme="dark"] .dark-panel .text-slate-700,
+html[data-theme="dark"] .dark-panel .text-slate-600,
+html[data-theme="dark"] .dark-panel .text-slate-500 {
+  color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] .dark-panel .border-slate-200 {
+  border-color: rgba(148, 163, 184, 0.25) !important;
+}

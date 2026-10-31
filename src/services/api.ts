@@ -12,7 +12,11 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-const applications: ProjectApplication[] = [];
+const applications: ProjectApplication[] = [
+  { id: "app-1", projectId: "2", role: "Python Developer", message: "Chciałbym pomóc w głębokim modelu i części backendowej projektu AI do planowania nauki.", status: "pending" },
+  { id: "app-2", projectId: "5", role: "Game Designer", message: "Mam doświadczenie w mechanikach gier i chcę pomóc rozwijać design oraz systemy rozgrywki.", status: "accepted" },
+  { id: "app-3", projectId: "11", role: "Frontend Developer", message: "Potrafię tworzyć interfejsy, animacje i dobre UX dla hackathonowych prototypów.", status: "rejected" },
+];
 
 export const projectsApi = {
   list(q: ProjectQuery = {}): Promise<Project[]> {
@@ -33,6 +37,9 @@ export const projectsApi = {
 };
 
 export const applicationsApi = {
+  list(): Promise<ProjectApplication[]> {
+    return delay(applications);
+  },
   hasApplied: (projectId: string) => applications.some((a) => a.projectId === projectId),
   apply(projectId: string, role: string, message: string): Promise<ProjectApplication> {
     if (!MOCK) return http(`/projects/${projectId}/applications`, { method: "POST", body: JSON.stringify({ role, message }) });
