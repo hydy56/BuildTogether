@@ -1,0 +1,4 @@
+@import "tailwindcss";
+@theme { --color-brand-50:#f5f3ff; --color-brand-100:#ede9fe; --color-brand-500:#7c5cf0; --color-brand-600:#6d4ae0; --color-brand-700:#5b3bc4; --font-sans:"Inter",system-ui,sans-serif; }
+body{background:#f8f9fc;color:#1b1b2f}
+:focus-visible{outline:2px solid var(--color-brand-500);outline-offset:2px}
