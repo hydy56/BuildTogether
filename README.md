@@ -2,6 +2,12 @@
 
 Frontend MVP platformy wspierającej studentów w odkrywaniu projektów, rekrutacji i budowaniu zespołów.
 
+## Dokumentacja
+
+- [Specyfikacja API](BACKEND_API_SPEC.md)
+- [Przykładowe zmienne środowiska](.env.example)
+- [Kod warstwy API](src/services/api.ts)
+
 ## Uruchomienie
 
 ### Lokalnie
@@ -23,11 +29,11 @@ Frontend działa na porcie 5173, a proxy API jest konfigurowane przez zmienną `
 
 ## Konfiguracja środowiska
 
-Plik `.env.example` zawiera podstawowe ustawienia:
+Plik [.env.example](.env.example) zawiera podstawowe ustawienia:
 
 ```env
 VITE_API_BASE_URL=/api
-VITE_USE_MOCKS=true
+VITE_USE_MOCKS=false
 VITE_PROXY_TARGET=http://localhost:8080
 ```
 
@@ -37,11 +43,11 @@ W Dockerze można ustawić:
 VITE_PROXY_TARGET=http://backend:8080
 ```
 
-## Architektura demo
+## Architektura backend-ready
 
-- dane mockowane: `src/mocks/data.ts`
-- warstwa API: `src/services/api.ts`
-- tryb demo: `VITE_USE_MOCKS=true`
+- pusty stan startowy: [src/mocks/data.ts](src/mocks/data.ts)
+- warstwa API: [src/services/api.ts](src/services/api.ts)
+- tryb backend-ready: `VITE_USE_MOCKS=false`
 - frontend używa `/api` oraz `credentials: "include"` zgodnie z planem integracji z backendem Spring Boot
 
 ## Zaimplementowane obszary
@@ -60,4 +66,4 @@ VITE_PROXY_TARGET=http://backend:8080
 
 ## Uwagi
 
-To jest wersja demo/frontendowa. Nie należy traktować jej jako bezpiecznego systemu uwierzytelniania produkcyjnego — jest to warstwa prezentacyjna i mock API przygotowane pod integrację z backendem Java Spring Boot.
+Aplikacja została przygotowana w pustym stanie startowym, bez danych demonstracyjnych. Repo nie ma osobnego backendu Java; frontend jest gotowy do integracji z backendem Java Spring Boot i do testów z realnym API. Dokumentacja API obejmuje zarówno kontrakt frontendowy, jak i plan integracji z backendem.

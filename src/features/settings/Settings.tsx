@@ -11,8 +11,8 @@ export default function Settings() {
   const [form, setForm] = useState({
     name: currentUser.name,
     university: currentUser.university,
-    email: currentUser.username ? `${currentUser.username}@demo.local` : "demo@buildtogether.dev",
-    bio: "Lubię budować produkty, szkolić się w UX i pracować nad prostymi, ale mocnymi rozwiązaniami.",
+    email: "",
+    bio: "",
   });
 
   useEffect(() => {
@@ -135,7 +135,7 @@ export default function Settings() {
       <div className="flex flex-col gap-3 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-lg font-semibold text-slate-900">Zmiany w profilu</h2>
-          <p className="text-sm text-slate-500">Zapisywane są lokalnie w demo.</p>
+          <p className="text-sm text-slate-500">Gotowe do zapisania po podłączeniu backendu.</p>
         </div>
 
         <button onClick={handleSave} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700">

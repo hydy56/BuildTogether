@@ -114,7 +114,6 @@ export function Login() {
             <input
               type="email"
               name="email"
-              defaultValue="demo@buildtogether.dev"
               placeholder="twoj@email.com"
               className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white"
             />
@@ -133,7 +132,6 @@ export function Login() {
             <input
               type={showPassword ? "text" : "password"}
               name="password"
-              defaultValue="demo123"
               placeholder="Wprowadź hasło"
               className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-11 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white"
             />
@@ -153,7 +151,6 @@ export function Login() {
             <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-brand-600 accent-brand-600" />
             Zapamiętaj mnie
           </label>
-          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">Demo</span>
         </div>
 
         <button type="submit" disabled={isLoading} className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-brand-400">

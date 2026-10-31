@@ -1,20 +1,22 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ExternalLink, Users } from "lucide-react";
-import { applicationsApi, projectsApi } from "../../services/api";
+import { applicationsApi, authApi, projectsApi } from "../../services/api";
 import { Avatar, SkillBadge, Skeleton, StatusBadge } from "../../components/ui";
 import type { Project } from "../../types";
 
 function ApplyModal({ p, onClose, onDone }: { p: Project; onClose: () => void; onDone: () => void }) {
-  const [role, setRole] = useState(p.roles[0]?.name ?? "");
+  const rolesWithSlots = p.roles.filter((role) => applicationsApi.getRoleAvailability(p.id, role.name).available > 0);
+  const [role, setRole] = useState(rolesWithSlots[0]?.name ?? "");
   const [msg, setMsg] = useState("");
   const [state, setState] = useState<"idle" | "loading" | "ok">("idle");
   const [err, setErr] = useState("");
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (msg.trim().length < 20) return setErr("Napisz co najmniej 20 znaków.");
+    if (!role) return setErr("Brak dostępnych ról do aplikacji.");
+    if (msg.trim().length < 20) return setErr("Napisz co najmniej 20 znaków. Krótka wiadomość nie wystarczy.");
     setState("loading");
     setErr("");
 
@@ -27,6 +29,18 @@ function ApplyModal({ p, onClose, onDone }: { p: Project; onClose: () => void; o
       setState("idle");
     }
   };
+
+  if (!rolesWithSlots.length) {
+    return (
+      <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 grid place-items-center bg-slate-900/50 p-4" onClick={onClose}>
+        <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+          <h2 className="text-xl font-bold text-slate-900">Brak dostępnych miejsc</h2>
+          <p className="mt-2 text-sm text-slate-600">Wszystkie role w tym projekcie są już pełne.</p>
+          <button onClick={onClose} className="mt-5 rounded-lg bg-brand-600 px-4 py-2 text-white">Zamknij</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="ttl" className="fixed inset-0 z-50 grid place-items-center bg-slate-900/50 p-4" onClick={onClose}>
@@ -44,7 +58,7 @@ function ApplyModal({ p, onClose, onDone }: { p: Project; onClose: () => void; o
             <label className="block text-sm font-medium">
               Rola
               <select value={role} onChange={(e) => setRole(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2">
-                {p.roles.map((r) => <option key={r.id}>{r.name}</option>)}
+                {rolesWithSlots.map((r) => <option key={r.id} value={r.name}>{r.name}</option>)}
               </select>
             </label>
             <label className="block text-sm font-medium">
@@ -66,6 +80,7 @@ function ApplyModal({ p, onClose, onDone }: { p: Project; onClose: () => void; o
 }
 
 export default function Details() {
+  const navigate = useNavigate();
   const { id = "" } = useParams();
   const { data: p, isLoading } = useQuery({ queryKey: ["project", id], queryFn: () => projectsApi.get(id) });
   const [open, setOpen] = useState(false);
@@ -83,6 +98,10 @@ export default function Details() {
       </div>
     );
   }
+
+  const currentUser = authApi.getCurrentUser();
+  const isOwner = currentUser.id === p.owner.id;
+  const isMember = p.members.some((member) => member.user.id === currentUser.id);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -111,11 +130,17 @@ export default function Details() {
           </div>
 
           <button
-            disabled={applied || p.status === "closed"}
-            onClick={() => setOpen(true)}
+            disabled={applied || p.status === "closed" || isOwner || isMember || !authApi.isAuthenticated()}
+            onClick={() => {
+              if (!authApi.isAuthenticated()) {
+                navigate("/login", { replace: true });
+                return;
+              }
+              setOpen(true);
+            }}
             className="inline-flex items-center justify-center rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-slate-300"
           >
-            {applied ? "Zgłoszenie wysłane" : "Aplikuj do projektu"}
+            {isOwner ? "To Twój projekt" : isMember ? "Jesteś już w zespole" : p.status === "closed" ? "Rekrutacja zamknięta" : applied ? "Zgłoszenie wysłane" : "Aplikuj do projektu"}
           </button>
         </div>
 
@@ -159,12 +184,15 @@ export default function Details() {
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-bold text-slate-900">Otwarte role</h2>
             <ul className="mt-4 space-y-3 text-sm text-slate-700">
-              {p.roles.map((role) => (
-                <li key={role.id} className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2">
-                  <span>{role.name}</span>
-                  <span className="font-medium text-slate-600">{role.slots} miejsc</span>
-                </li>
-              ))}
+              {p.roles.map((role) => {
+                const availability = applicationsApi.getRoleAvailability(p.id, role.name);
+                return (
+                  <li key={role.id} className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2">
+                    <span>{role.name}</span>
+                    <span className="font-medium text-slate-600">{availability.available}/{role.slots} wolne</span>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </aside>
