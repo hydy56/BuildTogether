@@ -5,20 +5,35 @@ body{background:#f8f9fc;color:#1b1b2f;transition:background-color .2s ease,color
 html[data-theme="dark"] body{background:#020817;color:#e2e8f0}
 :focus-visible{outline:2px solid var(--color-brand-500);outline-offset:2px}
 
+html[data-theme="dark"] body,
+html[data-theme="dark"] #root,
+html[data-theme="dark"] header,
+html[data-theme="dark"] aside,
+html[data-theme="dark"] main,
+html[data-theme="dark"] nav,
+html[data-theme="dark"] section,
+html[data-theme="dark"] article,
+html[data-theme="dark"] footer,
 html[data-theme="dark"] [class*="bg-white"],
 html[data-theme="dark"] [class*="bg-slate-50"],
 html[data-theme="dark"] [class*="bg-slate-100"],
 html[data-theme="dark"] [class*="bg-slate-200"],
-html[data-theme="dark"] [class*="bg-slate-300"] {
+html[data-theme="dark"] [class*="bg-slate-300"],
+html[data-theme="dark"] [class*="bg-slate-800"],
+html[data-theme="dark"] [class*="bg-slate-900"],
+html[data-theme="dark"] [class*="bg-slate-950"] {
   background-color: #0f172a !important;
 }
 
 html[data-theme="dark"] [class*="border-slate-200"],
-html[data-theme="dark"] [class*="border-slate-300"] {
+html[data-theme="dark"] [class*="border-slate-300"],
+html[data-theme="dark"] [class*="border-slate-700"],
+html[data-theme="dark"] [class*="border-slate-800"] {
   border-color: rgba(148, 163, 184, 0.25) !important;
 }
 
 html[data-theme="dark"] [class*="text-slate-900"],
+html[data-theme="dark"] [class*="text-slate-800"],
 html[data-theme="dark"] [class*="text-slate-700"],
 html[data-theme="dark"] [class*="text-slate-600"],
 html[data-theme="dark"] [class*="text-slate-500"],
@@ -45,12 +60,15 @@ html[data-theme="dark"] textarea::placeholder {
   color: #94a3b8 !important;
 }
 
-html[data-theme="dark"] .shadow-sm {
-  box-shadow: 0 1px 0 rgba(15,23,42,0.25), 0 10px 20px rgba(15,23,42,0.25) !important;
+html[data-theme="dark"] .shadow-sm,
+html[data-theme="dark"] .shadow-lg,
+html[data-theme="dark"] .shadow-xl {
+  box-shadow: 0 1px 0 rgba(15,23,42,0.25), 0 18px 30px rgba(2,6,23,0.55) !important;
 }
 
 html[data-theme="dark"] .hover\:bg-slate-100:hover,
-html[data-theme="dark"] .hover\:bg-slate-50:hover {
+html[data-theme="dark"] .hover\:bg-slate-50:hover,
+html[data-theme="dark"] .hover\:bg-slate-200:hover {
   background-color: #111827 !important;
 }
 
@@ -80,4 +98,10 @@ html[data-theme="dark"] .dark-panel .text-slate-500 {
 
 html[data-theme="dark"] .dark-panel .border-slate-200 {
   border-color: rgba(148, 163, 184, 0.25) !important;
+}
+
+html[data-theme="dark"] .bg-slate-900.text-white,
+html[data-theme="dark"] .bg-slate-900 .text-white,
+html[data-theme="dark"] .bg-slate-950 .text-white {
+  color: #f8fafc !important;
 }

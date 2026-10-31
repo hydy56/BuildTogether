@@ -1,10 +1,18 @@
 import { Bell, LockKeyhole, MoonStar, ShieldCheck, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
+import { authApi, usersApi } from "../../services/api";
 
 export default function Settings() {
+  const currentUser = authApi.getCurrentUser();
   const [isDark, setIsDark] = useState(() => {
     if (typeof window === "undefined") return false;
     return document.documentElement.dataset.theme === "dark" || localStorage.getItem("theme") === "dark";
+  });
+  const [form, setForm] = useState({
+    name: currentUser.name,
+    university: currentUser.university,
+    email: currentUser.username ? `${currentUser.username}@demo.local` : "demo@buildtogether.dev",
+    bio: "Lubię budować produkty, szkolić się w UX i pracować nad prostymi, ale mocnymi rozwiązaniami.",
   });
 
   useEffect(() => {
@@ -12,6 +20,14 @@ export default function Settings() {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("theme", theme);
   }, [isDark]);
+
+  const handleSave = async () => {
+    await usersApi.updateMe({
+      name: form.name,
+      university: form.university,
+      skills: currentUser.skills,
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -27,22 +43,40 @@ export default function Settings() {
           <div className="mt-5 space-y-5">
             <label className="block">
               <span className="mb-1.5 block text-sm font-medium text-slate-700">Imię i nazwisko</span>
-              <input defaultValue="Jan Kowalski" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:bg-white" />
+              <input
+                value={form.name}
+                onChange={(event) => setForm((value) => ({ ...value, name: event.target.value }))}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:bg-white"
+              />
             </label>
 
             <label className="block">
               <span className="mb-1.5 block text-sm font-medium text-slate-700">Adres e-mail</span>
-              <input defaultValue="jan.kowalski@example.com" type="email" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:bg-white" />
+              <input
+                value={form.email}
+                onChange={(event) => setForm((value) => ({ ...value, email: event.target.value }))}
+                type="email"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:bg-white"
+              />
             </label>
 
             <label className="block">
               <span className="mb-1.5 block text-sm font-medium text-slate-700">Uczelnia</span>
-              <input defaultValue="Politechnika Wrocławska" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:bg-white" />
+              <input
+                value={form.university}
+                onChange={(event) => setForm((value) => ({ ...value, university: event.target.value }))}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:bg-white"
+              />
             </label>
 
             <label className="block">
               <span className="mb-1.5 block text-sm font-medium text-slate-700">Bio</span>
-              <textarea rows={4} defaultValue="Lubię budować produkty, szkolić się w UX i pracować nad prostymi, ale mocnymi rozwiązaniami." className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:bg-white" />
+              <textarea
+                rows={4}
+                value={form.bio}
+                onChange={(event) => setForm((value) => ({ ...value, bio: event.target.value }))}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:bg-white"
+              />
             </label>
           </div>
         </section>
@@ -104,7 +138,9 @@ export default function Settings() {
           <p className="text-sm text-slate-500">Zapisywane są lokalnie w demo.</p>
         </div>
 
-        <button className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700">Zapisz ustawienia</button>
+        <button onClick={handleSave} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700">
+          Zapisz ustawienia
+        </button>
       </div>
     </div>
   );

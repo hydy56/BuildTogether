@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronRight, Plus, Sparkles, Trash2 } from "lucide-react";
-import { currentUser, projects } from "../../mocks/data";
-import type { Category, Project } from "../../types";
+import { authApi, projectsApi } from "../../services/api";
+import type { Category } from "../../types";
 
 const categories: Category[] = ["Startup", "AI", "Programowanie", "Design", "Gaming", "Nauka", "Inne"];
 
@@ -10,6 +10,7 @@ const starterSkills = ["React", "TypeScript", "Python", "Figma", "Node.js", "UI/
 
 export default function NewProject() {
   const navigate = useNavigate();
+  const currentUser = authApi.getCurrentUser();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<Category>("Startup");
   const [shortDescription, setShortDescription] = useState("");
@@ -37,7 +38,7 @@ export default function NewProject() {
   };
   const removeRole = (index: number) => setRoles((current) => (current.length > 1 ? current.filter((_, idx) => idx !== index) : current));
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     const cleanGoals = goals.map((goal) => goal.trim()).filter(Boolean);
@@ -48,8 +49,7 @@ export default function NewProject() {
       slots: Number(role.slots) || 1,
     }));
 
-    const newProject: Project = {
-      id: String(projects.length + 1),
+    const created = await projectsApi.create({
       title: title.trim(),
       shortDescription: shortDescription.trim(),
       description: description.trim() || shortDescription.trim(),
@@ -62,10 +62,9 @@ export default function NewProject() {
       members: [{ user: currentUser, role: "Założyciel" }],
       status: "open",
       createdAt: new Date().toISOString(),
-    };
+    });
 
-    projects.unshift(newProject);
-    navigate(`/projects/${newProject.id}`);
+    navigate(`/projects/${created.id}`);
   };
 
   return (

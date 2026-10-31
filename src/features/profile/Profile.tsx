@@ -2,10 +2,11 @@ import { ArrowUpRight, BriefcaseBusiness, MapPin, Sparkles, UserRound } from "lu
 import { Link, useParams } from "react-router-dom";
 import { Avatar } from "../../components/ui";
 import { projects } from "../../mocks/data";
-import { me } from "../../services/api";
+import { authApi } from "../../services/api";
 
 export default function Profile() {
   const { username } = useParams();
+  const me = authApi.getCurrentUser();
   const user = username === me.username || username === me.id ? me : me;
   const ownedProjects = projects.filter((project) => project.owner.id === user.id || project.owner.username === user.username);
   const joinedProjects = projects.filter((project) => project.members.some((member) => member.user.id === user.id));
@@ -25,9 +26,9 @@ export default function Profile() {
           </div>
 
           <div className="flex gap-3">
-            <button className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+            <Link to="/settings" className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
               Edytuj profil
-            </button>
+            </Link>
             <Link to="/projects" className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">
               Zobacz projekty
             </Link>

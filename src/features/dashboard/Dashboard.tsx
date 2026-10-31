@@ -1,12 +1,20 @@
 import { ArrowUpRight, BriefcaseBusiness, FolderKanban, PencilLine, Plus, Users } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { StatusBadge } from "../../components/ui";
-import { me } from "../../services/api";
-import { projects } from "../../mocks/data";
-
-const myProjects = projects.filter((project) => project.owner.id === me.id || project.members.some((member) => member.user.id === me.id));
+import { authApi, projectsApi } from "../../services/api";
 
 export default function Dashboard() {
+  const currentUser = authApi.getCurrentUser();
+  const { data: projects = [], isLoading } = useQuery({
+    queryKey: ["projects"],
+    queryFn: () => projectsApi.list(),
+  });
+
+  const myProjects = projects.filter(
+    (project) => project.owner.id === currentUser.id || project.members.some((member) => member.user.id === currentUser.id)
+  );
+
   const activeProjects = myProjects.filter((p) => p.status !== "closed").length;
   const totalMembers = myProjects.reduce((sum, project) => sum + project.members.length, 0);
 
@@ -33,7 +41,7 @@ export default function Dashboard() {
             <p className="text-sm text-slate-500">Aktywne projekty</p>
             <FolderKanban className="text-brand-600" size={18} />
           </div>
-          <p className="mt-4 text-3xl font-bold text-slate-900">{activeProjects}</p>
+          <p className="mt-4 text-3xl font-bold text-slate-900">{isLoading ? "…" : activeProjects}</p>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -41,7 +49,7 @@ export default function Dashboard() {
             <p className="text-sm text-slate-500">Łącznie członków</p>
             <Users className="text-brand-600" size={18} />
           </div>
-          <p className="mt-4 text-3xl font-bold text-slate-900">{totalMembers}</p>
+          <p className="mt-4 text-3xl font-bold text-slate-900">{isLoading ? "…" : totalMembers}</p>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -49,7 +57,7 @@ export default function Dashboard() {
             <p className="text-sm text-slate-500">Zespoły</p>
             <BriefcaseBusiness className="text-brand-600" size={18} />
           </div>
-          <p className="mt-4 text-3xl font-bold text-slate-900">{myProjects.length}</p>
+          <p className="mt-4 text-3xl font-bold text-slate-900">{isLoading ? "…" : myProjects.length}</p>
         </div>
       </div>
 
@@ -57,12 +65,14 @@ export default function Dashboard() {
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-xl font-bold text-slate-900">Twoje projekty</h2>
           <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
-            {myProjects.length} projektów
+            {isLoading ? "Ładowanie…" : `${myProjects.length} projektów`}
           </span>
         </div>
 
         <div className="mt-5 space-y-4">
-          {myProjects.length === 0 ? (
+          {isLoading ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500">Ładowanie danych projektu…</div>
+          ) : myProjects.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500">
               Nie dołączyłeś jeszcze do żadnego projektu. Stwórz własną inicjatywę albo znajdź ciekawy zespół.
             </div>

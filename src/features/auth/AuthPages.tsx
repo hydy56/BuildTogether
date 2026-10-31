@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Eye, EyeOff, LockKeyhole, Mail, School, UserRound } from "lucide-react";
 import { Logo } from "../../components/ui";
+import { authApi } from "../../services/api";
 
 type AuthShellProps = {
   title: string;
@@ -27,9 +28,7 @@ function AuthShell({ title, subtitle, children, footerText, footerLinkText, foot
         <div className="grid overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)] lg:grid-cols-[1.15fr_0.85fr]">
           <div className="hidden bg-gradient-to-br from-brand-600 via-indigo-600 to-violet-500 p-10 text-white lg:flex lg:flex-col lg:justify-between">
             <div>
-              <span className="inline-flex rounded-full border border-white/30 bg-white/10 px-3 py-1 text-sm font-medium backdrop-blur-sm">
-                BuildTogether
-              </span>
+              <span className="inline-flex rounded-full border border-white/30 bg-white/10 px-3 py-1 text-sm font-medium backdrop-blur-sm">BuildTogether</span>
               <h2 className="mt-8 max-w-md text-4xl font-bold leading-tight">Znajdź swoich ludzi i zbuduj coś razem.</h2>
             </div>
             <div className="space-y-4 text-sm text-indigo-50">
@@ -72,10 +71,27 @@ function AuthShell({ title, subtitle, children, footerText, footerLinkText, foot
 }
 
 export function Login() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setError("");
+    const form = new FormData(event.currentTarget);
+    const email = String(form.get("email") ?? "");
+    const password = String(form.get("password") ?? "");
+
+    try {
+      setIsLoading(true);
+      await authApi.login({ email, password });
+      navigate("/projects", { replace: true });
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -87,6 +103,10 @@ export function Login() {
       footerLinkTo="/register"
     >
       <form className="space-y-5" onSubmit={handleSubmit}>
+        {error ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+        ) : null}
+
         <label className="block">
           <span className="mb-1.5 block text-sm font-medium text-slate-700">Adres e-mail</span>
           <div className="relative">
@@ -94,6 +114,7 @@ export function Login() {
             <input
               type="email"
               name="email"
+              defaultValue="demo@buildtogether.dev"
               placeholder="twoj@email.com"
               className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white"
             />
@@ -112,6 +133,7 @@ export function Login() {
             <input
               type={showPassword ? "text" : "password"}
               name="password"
+              defaultValue="demo123"
               placeholder="Wprowadź hasło"
               className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-11 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white"
             />
@@ -134,8 +156,8 @@ export function Login() {
           <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">Demo</span>
         </div>
 
-        <button type="submit" className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-700">
-          Zaloguj się
+        <button type="submit" disabled={isLoading} className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-brand-400">
+          {isLoading ? "Logowanie..." : "Zaloguj się"}
         </button>
       </form>
     </AuthShell>
@@ -143,11 +165,36 @@ export function Login() {
 }
 
 export function Register() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setError("");
+    const form = new FormData(event.currentTarget);
+    const name = String(form.get("name") ?? "");
+    const email = String(form.get("email") ?? "");
+    const university = String(form.get("university") ?? "");
+    const password = String(form.get("password") ?? "");
+    const confirmPassword = String(form.get("confirmPassword") ?? "");
+
+    if (password !== confirmPassword) {
+      setError("Hasła muszą być takie same.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await authApi.register({ name, email, university, password });
+      navigate("/projects", { replace: true });
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -159,6 +206,10 @@ export function Register() {
       footerLinkTo="/login"
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
+        {error ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+        ) : null}
+
         <label className="block">
           <span className="mb-1.5 block text-sm font-medium text-slate-700">Imię i nazwisko</span>
           <div className="relative">
@@ -240,8 +291,8 @@ export function Register() {
           </div>
         </label>
 
-        <button type="submit" className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-700">
-          Utwórz konto
+        <button type="submit" disabled={isLoading} className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-brand-400">
+          {isLoading ? "Tworzenie konta..." : "Utwórz konto"}
         </button>
       </form>
     </AuthShell>
@@ -250,9 +301,19 @@ export function Register() {
 
 export function ForgotPassword() {
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const email = String(form.get("email") ?? "");
+
+    if (!email.trim()) {
+      setError("Podaj adres e-mail.");
+      return;
+    }
+
+    setError("");
     setSent(true);
   };
 
@@ -266,6 +327,10 @@ export function ForgotPassword() {
     >
       {!sent ? (
         <form className="space-y-5" onSubmit={handleSubmit}>
+          {error ? (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+          ) : null}
+
           <label className="block">
             <span className="mb-1.5 block text-sm font-medium text-slate-700">Adres e-mail</span>
             <div className="relative">
